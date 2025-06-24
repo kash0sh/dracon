@@ -11,15 +11,21 @@ RUN apt update && apt install -y \
     ros-humble-geometry-msgs \
     ros-humble-std-msgs \
     ros-humble-rclcpp \
+    ros-humble-rosidl-default-generators \
+    ros-humble-rosidl-default-runtime \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace structure
 WORKDIR /home/swarm_ws
-COPY ../ /home/swarm_ws/
+RUN mkdir -p src
+    
+# Copy packages into workspace
+COPY ./dracon_msgs ./src/dracon_msgs
+COPY ./agent ./src/agent
 
-# Source ROS and build workspace
+# Build the workspace
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
-    colcon build --packages-select agent
+    colcon build
 
 # Source overlay by default
 SHELL ["/bin/bash", "-c"]
@@ -28,3 +34,5 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc && \
 
 # Default entrypoint to source and stay in shell
 ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/$ROS_DISTRO/setup.bash && source /home/swarm_ws/install/setup.bash && exec \"$@\"", "--"]
+
+RUN cat src/dracon_msgs/package.xml

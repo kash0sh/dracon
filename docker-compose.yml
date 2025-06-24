@@ -11,17 +11,28 @@ services:
   agent1:
     image: ros_agent:humble
     container_name: agent1
-    command: ros2 run agent agent_node --ros-args -p agent_id:=agent1 -p x:=1.0 -p y:=2.0
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent1 -p x:=1.0 -p y:=2.0 -p isLeader:=true
     networks:
       - rosnet
 
   agent2:
     image: ros_agent:humble
     container_name: agent2
-    command: ros2 run agent agent_node --ros-args -p agent_id:=agent2 -p x:=4.0 -p y:=3.0
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent2 -p x:=4.0 -p y:=3.0 -p isLeader:=false
     networks:
       - rosnet
-
+  agent3:
+    image: ros_agent:humble
+    container_name: agent3
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent3 -p x:=2.0 -p y:=5.0 -p isLeader:=false
+    networks:
+      - rosnet  
+  agent4:
+    image: ros_agent:humble
+    container_name: agent4
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent4 -p x:=3.0 -p y:=1.0 -p isLeader:=false
+    networks:
+      - rosnet
 networks:
   rosnet:
     driver: bridge

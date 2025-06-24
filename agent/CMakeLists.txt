@@ -10,13 +10,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(dracon_msgs REQUIRED)
 
 add_executable(agent_node src/agent_node.cpp)
-ament_target_dependencies(agent_node rclcpp std_msgs geometry_msgs)
+ament_target_dependencies(agent_node rclcpp std_msgs geometry_msgs dracon_msgs)
 
 # Controller node
 add_executable(controller_node src/controller_node.cpp)
-ament_target_dependencies(controller_node rclcpp std_msgs geometry_msgs)
+ament_target_dependencies(controller_node rclcpp std_msgs geometry_msgs dracon_msgs)
 
 # Install targets
 install(TARGETS
