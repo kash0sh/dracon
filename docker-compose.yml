@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  controller:
+    image: ros_agent:humble
+    container_name: controller
+    command: ros2 run agent controller_node
+    networks:
+      - rosnet
+
+  agent1:
+    image: ros_agent:humble
+    container_name: agent1
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent1 -p x:=1.0 -p y:=2.0
+    networks:
+      - rosnet
+
+  agent2:
+    image: ros_agent:humble
+    container_name: agent2
+    command: ros2 run agent agent_node --ros-args -p agent_id:=agent2 -p x:=4.0 -p y:=3.0
+    networks:
+      - rosnet
+
+networks:
+  rosnet:
+    driver: bridge

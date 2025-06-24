@@ -1,0 +1,32 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/kashish/swarm_ws/install/foros/include/**",
+        "/home/kashish/swarm_ws/install/foros_msgs/include/**",
+        "/home/kashish/swarm_ws/install/ros_raft/include/**",
+        "/home/kashish/swarm_ws/install/ros_raft_interfaces/include/**",
+        "/home/kashish/colcon_ws/install/servo_msgs/include/**",
+        "/home/kashish/colcon_ws/install/realsense_gazebo_plugin/include/**",
+        "/home/kashish/colcon_ws/install/payload_service/include/**",
+        "/home/kashish/colcon_ws/install/linkattacher_msgs/include/**",
+        "/home/kashish/colcon_ws/install/ebot_docking/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/kashish/swarm_ws/src/foros/foros/include/**",
+        "/home/kashish/swarm_ws/src/hello_cluster/include/**",
+        "/home/kashish/swarm_ws/src/ros_raft/src/ros_raft/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
