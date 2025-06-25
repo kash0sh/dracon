@@ -91,13 +91,16 @@ private:
             RCLCPP_INFO(get_logger(), "[%s] Computed cost for job %s: %.2f", agent_id_.c_str(), job.job_id.c_str(), cost.cost);
         }
         pub_costs_->publish(cost_table_msg);
-        RCLCPP_INFO(get_logger(), "[%s] Published cost table.", agent_id_.c_str());
+        RCLCPP_INFO(get_logger(), "[%s] Published cost table with %zu costs.", agent_id_.c_str(), cost_table_msg.costs.size());
         // Start timer to aggregate costs for 2 seconds
         cost_timer_ = create_wall_timer(2s, std::bind(&AgentNode::on_cost_aggregation_timeout, this));
+        RCLCPP_INFO(get_logger(), "[%s] Started cost aggregation timer.", agent_id_.c_str());
     }
 
     // Step 3: Aggregate costs from all agents
     void on_costs_received(const dracon_msgs::msg::JobCostTable::SharedPtr msg) {
+        RCLCPP_INFO(get_logger(), "[%s] Received cost table from %s with %zu costs", 
+                   agent_id_.c_str(), msg->costs[0].agent_id.c_str(), msg->costs.size());
         for (const auto& cost : msg->costs) {
             cost_table_[cost.agent_id][cost.job_id] = cost.cost;
             RCLCPP_INFO(get_logger(), "[%s] Received cost from %s for job %s: %.2f", agent_id_.c_str(), cost.agent_id.c_str(), cost.job_id.c_str(), cost.cost);
@@ -106,14 +109,28 @@ private:
 
     // Step 4: Leader assigns jobs after 2 seconds
     void on_cost_aggregation_timeout() {
-        if (!is_leader_ || !waiting_for_costs_) return;
+        if (!is_leader_ || !waiting_for_costs_) {
+            RCLCPP_INFO(get_logger(), "[%s] Cost aggregation timeout - is_leader_: %s, waiting_for_costs_: %s", 
+                       agent_id_.c_str(), is_leader_ ? "true" : "false", waiting_for_costs_ ? "true" : "false");
+            return;
+        }
         waiting_for_costs_ = false;
         RCLCPP_INFO(get_logger(), "[%s] Aggregating costs and assigning jobs as leader...", agent_id_.c_str());
+        
+        // Debug: Print all costs received
+        RCLCPP_INFO(get_logger(), "[%s] Cost table contains costs from %zu agents:", agent_id_.c_str(), cost_table_.size());
+        for (const auto& [agent, jobs] : cost_table_) {
+            RCLCPP_INFO(get_logger(), "[%s] Agent %s has costs for %zu jobs", agent_id_.c_str(), agent.c_str(), jobs.size());
+        }
+        
         // Find all agent_ids and job_ids
         std::vector<std::string> agent_ids;
         std::vector<std::string> job_ids;
         for (const auto& [agent, jobs] : cost_table_) agent_ids.push_back(agent);
         for (const auto& job : current_jobs_) job_ids.push_back(job.job_id);
+        
+        RCLCPP_INFO(get_logger(), "[%s] Found %zu agents and %zu jobs", agent_id_.c_str(), agent_ids.size(), job_ids.size());
+        
         // Build cost matrix
         std::vector<std::vector<double>> cost_matrix(agent_ids.size(), std::vector<double>(job_ids.size(), 1e9));
         for (size_t i = 0; i < agent_ids.size(); ++i) {
